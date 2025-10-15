@@ -1,0 +1,40 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using PlatformService.Data;
+using PlatformService.Profiles;
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+
+builder.Services.AddScoped<IPlatformRepo, PlatformRepo>();
+builder.Services
+    .AddDbContext<AppDbContext>(opt =>
+    opt.UseInMemoryDatabase("InMem"));
+
+builder.Services.AddAutoMapper(typeof(PlatformsProfile));
+
+builder.Services.AddControllers();
+// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddOpenApi();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "PlatformService", Version = "v1" });
+});
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PlatformService v1"));
+}
+
+app.UseHttpsRedirection();
+
+app.UseAuthorization();
+
+app.MapControllers();
+PrepDb.PrepPopulation(app, app.Environment.IsProduction());
+app.Run();
