@@ -10,5 +10,5 @@ spec:
     - name: platformservice
       protocol: TCP
       port: 80 # node port internal port
-      targetPort: 8080 # container port of platformservice
+      targetPort: 80 # container port of platformservice
       nodePort: 30000 # external port to access the service

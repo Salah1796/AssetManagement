@@ -31,10 +31,10 @@ COPY --from=build /app/out ./
 
 # Tell ASP.NET Core which port to listen on inside the container
 # (This is the container port, not the host port)
-ENV ASPNETCORE_URLS=http://+:8080
+ENV ASPNETCORE_URLS=http://+:80
 
 # Expose the port (for documentation and K8s)
-EXPOSE 8080
+EXPOSE 80
 
 # Set the entry point (run the app)
 ENTRYPOINT ["dotnet", "CommandsService.dll"]
