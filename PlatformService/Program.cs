@@ -24,7 +24,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
-
+Console.WriteLine($"--> CommandService Endpoint {builder.Configuration["CommandService"]}");
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
