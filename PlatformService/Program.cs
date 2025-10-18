@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using PlatformService.AsyncDataServices;
 using PlatformService.Data;
 using PlatformService.Profiles;
 using PlatformService.SyncDataServices;
@@ -37,6 +38,12 @@ builder.Services.AddSwaggerGen(c =>
 });
 builder.Services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
 Console.WriteLine($"--> CommandService Endpoint {builder.Configuration["CommandService"]}");
+
+
+// Register the RabbitMQ client as a singleton
+builder.Services.AddSingleton<RabbitMQClient>();
+builder.Services.AddSingleton<IMessageBusClient>(sp => sp.GetRequiredService<RabbitMQClient>());
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -54,4 +61,9 @@ app.UseAuthorization();
 
 app.MapControllers();
 PrepDb.PrepPopulation(app, app.Environment.IsProduction());
+
+// Initialize the message bus once before app starts
+var bus = app.Services.GetRequiredService<RabbitMQClient>();
+await bus.InitializeAsync();
+
 app.Run();

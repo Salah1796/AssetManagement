@@ -19,7 +19,7 @@ builder.Services
 builder.Services.AddScoped<ICommandRepo, CommandRepo>();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "PlatformService", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "CommandsService", Version = "v1" });
 });
 
 var app = builder.Build();
@@ -29,7 +29,7 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.UseSwagger();
-    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PlatformService v1"));
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CommandsService v1"));
 }
 
 
