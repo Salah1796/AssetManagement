@@ -1,3 +1,8 @@
+using CommandsService.Data;
+using CommandsService.Profiles;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -5,6 +10,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddAutoMapper(typeof(CommandsProfile));
+
+builder.Services
+      .AddDbContext<AppDbContext>(opt =>
+      opt.UseInMemoryDatabase("InMem"));
+
+builder.Services.AddScoped<ICommandRepo, CommandRepo>();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "PlatformService", Version = "v1" });
+});
 
 var app = builder.Build();
 
@@ -12,7 +28,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PlatformService v1"));
 }
+
 
 app.UseHttpsRedirection();
 
