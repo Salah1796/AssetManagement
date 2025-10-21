@@ -4,6 +4,7 @@ using PlatformService.AsyncDataServices;
 using PlatformService.Data;
 using PlatformService.Profiles;
 using PlatformService.SyncDataServices;
+using PlatformService.SyncDataServices.Grpc;
 using PlatformService.SyncDataServices.Http;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,7 +44,7 @@ Console.WriteLine($"--> CommandService Endpoint {builder.Configuration["CommandS
 // Register the RabbitMQ client as a singleton
 builder.Services.AddSingleton<RabbitMQClient>();
 builder.Services.AddSingleton<IMessageBusClient>(sp => sp.GetRequiredService<RabbitMQClient>());
-
+builder.Services.AddGrpc();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -60,6 +61,14 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapGrpcService<GrpcPlatformService>();
+
+app.MapGet("/protos/platforms.proto", async context =>
+{
+    await context.Response.WriteAsync(File.ReadAllText("Protos/platforms.proto"));
+});
+
+
 PrepDb.PrepPopulation(app, app.Environment.IsProduction());
 
 // Initialize the message bus once before app starts

@@ -2,6 +2,8 @@ using CommandsService.AsyncDataServices;
 using CommandsService.Data;
 using CommandsService.EventProcessing;
 using CommandsService.Profiles;
+using CommandsService.SyncDataServices;
+using CommandsService.SyncDataServices.Grpc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -26,6 +28,8 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddSingleton<IEventProcessor, EventProcessor>();
 builder.Services.AddHostedService<RabbitMQSubscriber>();
+builder.Services.AddScoped<IPlatformDataClient, GrpcDataClient>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -36,6 +40,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CommandsService v1"));
 }
 
+PrepDb.PrepPopulation(app);
 
 app.UseHttpsRedirection();
 
